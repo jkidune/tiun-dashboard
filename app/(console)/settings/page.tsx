@@ -118,7 +118,7 @@ async function Billing({ ctx }: { ctx: Ctx }) {
     { label: "Usage sessions", used: sessions, limit: limits.sessions },
   ];
   return (
-    <div className="grid grid-2">
+    <div className="grid">
       <section className="card">
         <CardHead title="Your tiun. plan" sub="Growth · $99 per month, renews on the 1st" divider />
         <div className="card-body stack">
@@ -146,7 +146,7 @@ async function Billing({ ctx }: { ctx: Ctx }) {
               {invoices.map((inv, i) => (
                 <tr key={inv.id} className="row">
                   <td style={{ width: "auto", paddingLeft: 24 }}><code>{inv.id}</code></td>
-                  <td>{inv.label}</td>
+                  <td className="nowrap">{inv.label}</td>
                   <td className="num">{money(inv.amount)}</td>
                   <td style={{ textAlign: "left" }}><span className={`pill ${i === 0 ? "pending" : "succeeded"}`}>{i === 0 ? "Upcoming" : "Paid"}</span></td>
                 </tr>

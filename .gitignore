@@ -9,3 +9,6 @@ lib/generated
 
 # Original source images; the app uses the copies in public/avatars and public/banners
 public/*.png
+
+# Local editor/agent settings
+.claude/
