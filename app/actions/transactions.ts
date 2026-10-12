@@ -55,8 +55,8 @@ export async function recordPayment(_: ActionState, fd: FormData): Promise<Actio
         data: { workspaceId: workspace.id, mode: customer.mode, type: "payment", actorName: member.name, message: `${member.name} recorded ${METHODS[input.method]} payment of $${(cents / 100).toFixed(2)} from ${customer.name}` },
       }),
     ]);
-    revalidatePath("/customers");
-    revalidatePath("/transactions");
+    revalidatePath("/app/customers");
+    revalidatePath("/app/transactions");
     return { ok: true, message: "Payment recorded." };
   });
 }
@@ -98,7 +98,7 @@ export async function refundTransaction(_: ActionState, fd: FormData): Promise<A
           message: `${member.name} refunded $${(cents / 100).toFixed(2)} to ${customer?.name ?? "a customer"}${reason ? ` (${reason})` : ""}`,
         },
       });
-      revalidatePath("/transactions");
+      revalidatePath("/app/transactions");
       return { ok: true, message: `Refunded $${(cents / 100).toFixed(2)}.` };
     });
   });

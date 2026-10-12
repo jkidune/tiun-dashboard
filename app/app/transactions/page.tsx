@@ -89,7 +89,7 @@ export default async function TransactionsPage({ searchParams }: { searchParams:
           <LinkTabs
             active={status ? sp.status! : "all"}
             items={[{ key: "all", label: "All", count: all }, ...STATUSES.map((s) => ({ key: s, label: s[0].toUpperCase() + s.slice(1), count: counts.find((c) => c.status === s.toUpperCase())?._count ?? 0 }))]}
-            build={(k) => href("/transactions", current, { status: k === "all" ? null : k, page: null })}
+            build={(k) => href("/app/transactions", current, { status: k === "all" ? null : k, page: null })}
           />
           {all > 0 && (
             <div className="toolbar">
@@ -124,17 +124,17 @@ export default async function TransactionsPage({ searchParams }: { searchParams:
                       title="No payments yet"
                       text="Payments appear here when your app charges a customer, or when you record an M-Pesa, cash or bank payment from a customer’s page."
                     >
-                      <Link className="btn btn-ink" href="/customers">Go to customers</Link>
+                      <Link className="btn btn-ink" href="/app/customers">Go to customers</Link>
                     </EmptyRow>
                   ) : (
                     <EmptyRow colSpan={7} icon={SearchX} title="No payments match" text="Try a different search, status or filter.">
-                      {filtered && <Link className="btn" href="/transactions">Clear filters</Link>}
+                      {filtered && <Link className="btn" href="/app/transactions">Clear filters</Link>}
                     </EmptyRow>
                   ))}
                 {txs.map((t) => (
                   <tr key={t.id} className="row">
                     <td className="num" style={{ width: 130, paddingLeft: 24 }}>
-                      <Link className="row-link" href={href("/transactions", current, { id: t.id })} scroll={false}>
+                      <Link className="row-link" href={href("/app/transactions", current, { id: t.id })} scroll={false}>
                         <b style={{ fontWeight: 500 }}>{money(t.amountCents, t.currency)}</b>
                       </Link>
                     </td>
@@ -159,11 +159,11 @@ export default async function TransactionsPage({ searchParams }: { searchParams:
               </tbody>
             </table>
           </div>
-          <Pagination page={page} pageSize={PAGE_SIZE} total={total} build={(p) => href("/transactions", current, { page: p })} />
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} build={(p) => href("/app/transactions", current, { page: p })} />
         </section>
       </div>
 
-      {sp.id && <TransactionDrawer id={sp.id} closeHref={href("/transactions", current, { id: null })} />}
+      {sp.id && <TransactionDrawer id={sp.id} closeHref={href("/app/transactions", current, { id: null })} />}
     </>
   );
 }
@@ -177,7 +177,7 @@ async function TransactionDrawer({ id, closeHref }: { id: string; closeHref: str
   return (
     <Drawer title={money(t.amountCents, t.currency)} closeHref={closeHref} actions={<StatusPill status={t.status} />}>
       <dl className="dl">
-        <dt>Customer</dt><dd><Link href={`/customers?id=${t.customer.id}`}>{t.customer.name}</Link></dd>
+        <dt>Customer</dt><dd><Link href={`/app/customers?id=${t.customer.id}`}>{t.customer.name}</Link></dd>
         <dt>Description</dt><dd>{t.description}</dd>
         <dt>Method</dt><dd>{t.methodBrand}{t.methodLast4 ? ` ending ${t.methodLast4}` : ""}</dd>
         <dt>Transaction ID</dt><dd className="code">{t.id}</dd>

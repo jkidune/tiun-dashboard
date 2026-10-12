@@ -85,7 +85,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
     color: c.avatarColor,
     initials: initials(c.name),
     avatarUrl: null,
-    href: href("/customers", current, { id: c.id }),
+    href: href("/app/customers", current, { id: c.id }),
   }));
 
   const manage = can(member.role, "manageCustomers");
@@ -116,7 +116,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
           <LinkTabs
             active={sp.status && STATUSES.includes(sp.status as never) ? sp.status : "all"}
             items={[{ key: "all", label: "All", count: all }, ...STATUSES.map((s) => ({ key: s, label: s[0].toUpperCase() + s.slice(1), count: countOf(s.toUpperCase()) }))]}
-            build={(k) => href("/customers", current, { status: k === "all" ? null : k, page: null })}
+            build={(k) => href("/app/customers", current, { status: k === "all" ? null : k, page: null })}
           />
 
           {all > 0 && (
@@ -143,20 +143,20 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                   text="Customers appear here when you add them by hand or when your app creates them through the API."
                 >
                   {manage && <AddCustomerModal plans={activePlans} label="Add your first customer" triggerClass="btn btn-ink" />}
-                  <Link className="btn" href="/setup/integration#quickstart">Connect via API</Link>
+                  <Link className="btn" href="/app/setup/integration#quickstart">Connect via API</Link>
                 </EmptyRow>
               ) : (
                 <EmptyRow colSpan={8} icon={SearchX} title="No customers match" text={filtered ? "Try a different search, tab or filter." : "Nothing here yet."}>
-                  {filtered && <Link className="btn" href="/customers">Clear filters</Link>}
+                  {filtered && <Link className="btn" href="/app/customers">Clear filters</Link>}
                 </EmptyRow>
               )
             }
           />
-          <Pagination page={page} pageSize={PAGE_SIZE} total={total} build={(p) => href("/customers", current, { page: p })} />
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} build={(p) => href("/app/customers", current, { page: p })} />
         </section>
       </div>
 
-      {sp.id && <CustomerDrawer id={sp.id} closeHref={href("/customers", current, { id: null })} canManage={manage} />}
+      {sp.id && <CustomerDrawer id={sp.id} closeHref={href("/app/customers", current, { id: null })} canManage={manage} />}
     </>
   );
 }
@@ -216,7 +216,7 @@ async function CustomerDrawer({ id, closeHref, canManage }: { id: string; closeH
             {c.sessions.map((s) => (
               <li key={s.id}>
                 <div className="text">
-                  <Link href={`/sessions?id=${s.id}`}>{s.feature}</Link>
+                  <Link href={`/app/sessions?id=${s.id}`}>{s.feature}</Link>
                   <small>{fmt(s.units)} units · {money(s.costCents, workspace.currency)}</small>
                 </div>
                 <span className="when">{dateTime(s.startedAt)}</span>
@@ -232,7 +232,7 @@ async function CustomerDrawer({ id, closeHref, canManage }: { id: string; closeH
             {c.transactions.map((t) => (
               <li key={t.id}>
                 <div className="text">
-                  <Link href={`/transactions?id=${t.id}`}>{money(t.amountCents, t.currency)}</Link>
+                  <Link href={`/app/transactions?id=${t.id}`}>{money(t.amountCents, t.currency)}</Link>
                   <small>{t.description}</small>
                 </div>
                 <StatusPill status={t.status} />

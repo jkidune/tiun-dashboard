@@ -38,8 +38,8 @@ export async function createApiKey(_: ActionState, fd: FormData): Promise<Action
         data: { workspaceId: workspace.id, mode, type: "api_key", actorName: member.name, message: `${member.name} created the API key “${input.name}”` },
       }),
     ]);
-    revalidatePath("/apis");
-    revalidatePath("/setup/integration");
+    revalidatePath("/app/apis");
+    revalidatePath("/app/setup/integration");
     return { ok: true, secret: key.raw };
   });
 }
@@ -51,7 +51,7 @@ export async function rollApiKey(_: ActionState, fd: FormData): Promise<ActionSt
     if (!existing) throw new UserError("That key was revoked or no longer exists.");
     const key = generateApiKey(existing.mode);
     await db.apiKey.update({ where: { id: existing.id }, data: { keyHash: key.keyHash, prefix: key.prefix, createdAt: new Date(), lastUsedAt: null } });
-    revalidatePath("/apis");
+    revalidatePath("/app/apis");
     return { ok: true, secret: key.raw };
   });
 }
@@ -61,7 +61,7 @@ export async function revokeApiKey(_: ActionState, fd: FormData): Promise<Action
     const { workspace } = await authorize("developer");
     const { count } = await db.apiKey.updateMany({ where: { id: String(fd.get("id")), workspaceId: workspace.id, revokedAt: null }, data: { revokedAt: new Date() } });
     if (!count) throw new UserError("That key was already revoked.");
-    revalidatePath("/apis");
+    revalidatePath("/app/apis");
     return { ok: true, message: "Key revoked." };
   });
 }
@@ -76,7 +76,7 @@ export async function createWebhook(_: ActionState, fd: FormData): Promise<Actio
     const { workspace } = await authorize("developer");
     const input = hookSchema.parse({ url: fd.get("url"), events: fd.getAll("events") });
     await db.webhook.create({ data: { workspaceId: workspace.id, ...input } });
-    revalidatePath("/setup/integration");
+    revalidatePath("/app/setup/integration");
     return { ok: true, message: "Webhook added." };
   });
 }
@@ -86,7 +86,7 @@ export async function setWebhookStatus(_: ActionState, fd: FormData): Promise<Ac
     const { workspace } = await authorize("developer");
     const status = z.enum(["ENABLED", "DISABLED"]).parse(fd.get("status"));
     await db.webhook.updateMany({ where: { id: String(fd.get("id")), workspaceId: workspace.id }, data: { status } });
-    revalidatePath("/setup/integration");
+    revalidatePath("/app/setup/integration");
     return { ok: true };
   });
 }
@@ -95,7 +95,7 @@ export async function deleteWebhook(_: ActionState, fd: FormData): Promise<Actio
   return run(async () => {
     const { workspace } = await authorize("developer");
     await db.webhook.deleteMany({ where: { id: String(fd.get("id")), workspaceId: workspace.id } });
-    revalidatePath("/setup/integration");
+    revalidatePath("/app/setup/integration");
     return { ok: true };
   });
 }
@@ -109,7 +109,7 @@ export async function toggleIntegration(_: ActionState, fd: FormData): Promise<A
       where: { id: workspace.id },
       data: { integrations: { ...current, [app]: !current[app] } as Prisma.InputJsonObject },
     });
-    revalidatePath("/setup/integration");
+    revalidatePath("/app/setup/integration");
     return { ok: true };
   });
 }

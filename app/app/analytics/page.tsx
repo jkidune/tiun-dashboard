@@ -35,7 +35,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
               <p className="card-sub">Figures use {ctx.mode === "LIVE" ? "live" : "sandbox"} data. Change the month in the top bar.</p>
             </div>
             {(tab === "revenue" || tab === "subscribers") && (
-              <Link className={`btn${compare ? " btn-primary" : ""}`} href={href("/analytics", current, { compare: compare ? null : "1" })} scroll={false}>
+              <Link className={`btn${compare ? " btn-primary" : ""}`} href={href("/app/analytics", current, { compare: compare ? null : "1" })} scroll={false}>
                 {compare ? "Comparing to previous year" : "Compare to previous year"}
               </Link>
             )}
@@ -43,7 +43,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
           <LinkTabs
             active={tab}
             items={TABS.map((t) => ({ key: t, label: t[0].toUpperCase() + t.slice(1) }))}
-            build={(k) => href("/analytics", current, { tab: k === "revenue" ? null : k })}
+            build={(k) => href("/app/analytics", current, { tab: k === "revenue" ? null : k })}
           />
         </section>
 
@@ -155,7 +155,7 @@ async function RevenueTab({ ctx, compare }: { ctx: Ctx; compare: boolean }) {
             <tbody>
               {plans.length === 0 && (
                 <EmptyRow colSpan={5} icon={CreditCard} title="No plans yet" text="Revenue is broken down by plan once you create plans and customers subscribe.">
-                  <Link className="btn" href="/setup/checkout">Create a plan</Link>
+                  <Link className="btn" href="/app/setup/checkout">Create a plan</Link>
                 </EmptyRow>
               )}
               {plans.map((p) => {

@@ -12,3 +12,6 @@ public/*.png
 
 # Local editor/agent settings
 .claude/
+
+# Design reference screenshots (not part of the site)
+public/Accrue*

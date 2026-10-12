@@ -67,14 +67,14 @@ export function Topbar({
         role="search"
         onSubmit={(e) => {
           e.preventDefault();
-          if (query.trim()) router.push(`/customers?q=${encodeURIComponent(query.trim())}`);
+          if (query.trim()) router.push(`/app/customers?q=${encodeURIComponent(query.trim())}`);
         }}
       >
         <Search size={17} strokeWidth={1.7} />
         <input id="global-search" placeholder="Search customers" value={query} onChange={(e) => setQuery(e.target.value)} />
       </form>
 
-      <Link href="/#attention" className="btn btn-icon" aria-label={`Notifications: ${alerts} need attention`}>
+      <Link href="/app#attention" className="btn btn-icon" aria-label={`Notifications: ${alerts} need attention`}>
         <Bell size={17} strokeWidth={1.7} />
         {alerts > 0 && <span className="badge-dot" />}
       </Link>

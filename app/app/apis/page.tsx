@@ -185,7 +185,7 @@ export default async function ApisPage({ searchParams }: { searchParams: Promise
 
         <section className="card">
           <CardHead title="Request log" />
-          <LinkTabs active={errorsOnly ? "errors" : "all"} items={[{ key: "all", label: "All requests" }, { key: "errors", label: "Errors only" }]} build={(k) => href("/apis", current, { log: k === "all" ? null : k, page: null })} />
+          <LinkTabs active={errorsOnly ? "errors" : "all"} items={[{ key: "all", label: "All requests" }, { key: "errors", label: "Errors only" }]} build={(k) => href("/app/apis", current, { log: k === "all" ? null : k, page: null })} />
           <div className="table-wrap">
             <table>
               <thead>
@@ -206,13 +206,13 @@ export default async function ApisPage({ searchParams }: { searchParams: Promise
                     title={errorsOnly ? "No errors" : "No requests yet"}
                     text={errorsOnly ? "Every request in this mode succeeded." : "Calls to /api/v1 made with your keys are logged here with their status and latency."}
                   >
-                    {!errorsOnly && <Link className="btn" href="/setup/integration#quickstart">See the quickstart</Link>}
+                    {!errorsOnly && <Link className="btn" href="/app/setup/integration#quickstart">See the quickstart</Link>}
                   </EmptyRow>
                 )}
                 {requests.map((r) => (
                   <tr key={r.id} className="row">
                     <td style={{ width: 90, paddingLeft: 24 }}><span className="tag">{r.method}</span></td>
-                    <td><Link className="row-link code" href={href("/apis", current, { id: r.id })} scroll={false}>{r.path}</Link></td>
+                    <td><Link className="row-link code" href={href("/app/apis", current, { id: r.id })} scroll={false}>{r.path}</Link></td>
                     <td><code className={codeClass(r.statusCode)}>{r.statusCode}</code></td>
                     <td className="num">{fmt(r.latencyMs)} ms</td>
                     <td className="muted">{r.apiKey?.name ?? "—"}</td>
@@ -222,11 +222,11 @@ export default async function ApisPage({ searchParams }: { searchParams: Promise
               </tbody>
             </table>
           </div>
-          <Pagination page={page} pageSize={PAGE_SIZE} total={total} build={(p) => href("/apis", current, { page: p })} />
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} build={(p) => href("/app/apis", current, { page: p })} />
         </section>
       </div>
 
-      {sp.id && <RequestDrawer id={sp.id} closeHref={href("/apis", current, { id: null })} />}
+      {sp.id && <RequestDrawer id={sp.id} closeHref={href("/app/apis", current, { id: null })} />}
     </>
   );
 }

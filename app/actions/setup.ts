@@ -25,7 +25,7 @@ export async function saveAuthProviders(_: ActionState, fd: FormData): Promise<A
       }
     }
     await db.workspace.update({ where: { id: workspace.id }, data: { authSettings: json({ ...current, providers, providerConfig }) } });
-    revalidatePath("/setup/authentication");
+    revalidatePath("/app/setup/authentication");
     return { ok: true, message: "Sign-in methods saved." };
   });
 }
@@ -54,7 +54,7 @@ export async function saveAuthPolicies(_: ActionState, fd: FormData): Promise<Ac
       where: { id: workspace.id },
       data: { authSettings: json({ ...current, ...input, requireSymbols: checked(fd, "requireSymbols"), botProtection: checked(fd, "botProtection") }) },
     });
-    revalidatePath("/setup/authentication/policies");
+    revalidatePath("/app/setup/authentication/policies");
     return { ok: true, message: "Policies saved." };
   });
 }
@@ -73,7 +73,7 @@ export async function createPlan(_: ActionState, fd: FormData): Promise<ActionSt
     await db.plan.create({
       data: { workspaceId: workspace.id, name: input.name, model: input.model, priceCents: Math.round(input.price * 100), trialDays: input.trialDays, currency: workspace.currency },
     });
-    revalidatePath("/setup/checkout");
+    revalidatePath("/app/setup/checkout");
     return { ok: true, message: `${input.name} created.` };
   });
 }
@@ -82,7 +82,7 @@ export async function setPlanActive(_: ActionState, fd: FormData): Promise<Actio
   return run(async () => {
     const { workspace } = await authorize("checkout");
     await db.plan.updateMany({ where: { id: String(fd.get("id")), workspaceId: workspace.id }, data: { active: fd.get("active") === "true" } });
-    revalidatePath("/setup/checkout");
+    revalidatePath("/app/setup/checkout");
     return { ok: true };
   });
 }
@@ -108,7 +108,7 @@ export async function createCoupon(_: ActionState, fd: FormData): Promise<Action
     await db.coupon.create({
       data: { workspaceId: workspace.id, code: input.code, percentOff: input.percentOff, maxRedemptions: input.maxRedemptions ?? null, expiresAt: input.expiresAt ? new Date(input.expiresAt) : null },
     });
-    revalidatePath("/setup/checkout");
+    revalidatePath("/app/setup/checkout");
     return { ok: true, message: `${input.code} created.` };
   });
 }
@@ -117,7 +117,7 @@ export async function deleteCoupon(_: ActionState, fd: FormData): Promise<Action
   return run(async () => {
     const { workspace } = await authorize("checkout");
     await db.coupon.deleteMany({ where: { id: String(fd.get("id")), workspaceId: workspace.id } });
-    revalidatePath("/setup/checkout");
+    revalidatePath("/app/setup/checkout");
     return { ok: true };
   });
 }
@@ -153,7 +153,7 @@ export async function saveCheckoutAppearance(_: ActionState, fd: FormData): Prom
         }),
       },
     });
-    revalidatePath("/setup/checkout/appearance");
+    revalidatePath("/app/setup/checkout/appearance");
     return { ok: true, message: "Checkout settings saved." };
   });
 }

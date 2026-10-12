@@ -17,7 +17,7 @@ export default async function PoliciesPage() {
   return (
     <>
       <PageTopbar title="Authentication" showPeriod={false}>
-        <Link href="/setup/authentication" className="btn">Providers</Link>
+        <Link href="/app/setup/authentication" className="btn">Providers</Link>
       </PageTopbar>
       <div className="content">
         <DirtyForm action={saveAuthPolicies}>

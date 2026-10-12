@@ -152,7 +152,7 @@ export default async function HomePage() {
                     <li key={t.id}>
                       <span className="feed-icon bad"><AlertTriangle size={15} /></span>
                       <div className="text">
-                        <Link href={`/transactions?id=${t.id}`}>{money(t.amountCents, t.currency)} payment failed</Link>
+                        <Link href={`/app/transactions?id=${t.id}`}>{money(t.amountCents, t.currency)} payment failed</Link>
                         <small>{t.customer.name} · {t.methodBrand} ••{t.methodLast4}</small>
                       </div>
                       <span className="when">{relative(t.createdAt)}</span>
@@ -164,7 +164,7 @@ export default async function HomePage() {
                       <li key={c.id}>
                         <span className="feed-icon warn"><Hourglass size={15} /></span>
                         <div className="text">
-                          <Link href={`/customers?id=${c.id}`}>{c.name}’s trial ends {daysLeft === 0 ? "today" : `in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`}</Link>
+                          <Link href={`/app/customers?id=${c.id}`}>{c.name}’s trial ends {daysLeft === 0 ? "today" : `in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`}</Link>
                           <small>{c.email}</small>
                         </div>
                       </li>
@@ -174,7 +174,7 @@ export default async function HomePage() {
                     <li key={w.id}>
                       <span className="feed-icon bad"><Webhook size={15} /></span>
                       <div className="text">
-                        <Link href="/setup/integration">Webhook deliveries failing</Link>
+                        <Link href="/app/setup/integration">Webhook deliveries failing</Link>
                         <small style={{ overflowWrap: "anywhere" }}>{w.url}</small>
                       </div>
                     </li>
@@ -217,10 +217,10 @@ export default async function HomePage() {
             <CardHead title="Quick actions" />
             <div className="card-body">
               <div className="quick">
-                <Link href="/customers"><UserPlus size={18} /> Add user</Link>
-                <Link href="/setup/checkout"><CreditCard size={18} /> Create plan</Link>
-                <Link href="/apis"><KeyRound size={18} /> Create API key</Link>
-                <Link href="/settings/users"><Mail size={18} /> Invite teammate</Link>
+                <Link href="/app/customers"><UserPlus size={18} /> Add user</Link>
+                <Link href="/app/setup/checkout"><CreditCard size={18} /> Create plan</Link>
+                <Link href="/app/apis"><KeyRound size={18} /> Create API key</Link>
+                <Link href="/app/settings/users"><Mail size={18} /> Invite teammate</Link>
               </div>
             </div>
           </section>
