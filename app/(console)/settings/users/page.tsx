@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+import { appOrigin } from "@/lib/origin";
 import { Check, Link2, Mail, Minus, UserPlus } from "lucide-react";
 import { EmptyRow } from "@/components/ui/empty";
 import { InviteFields } from "./InviteFields";
@@ -33,8 +33,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
     db.invite.findMany({ where: { workspaceId: workspace.id }, orderBy: { createdAt: "desc" } }),
   ]);
   const manage = can(member.role, "team");
-  const h = await headers();
-  const origin = `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host") ?? "localhost:3000"}`;
+  const origin = await appOrigin();
   const now = new Date();
 
   return (

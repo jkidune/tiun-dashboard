@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { randomBytes } from "node:crypto";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
+import { appOrigin } from "@/lib/origin";
 import { revalidatePath } from "next/cache";
 import type { Prisma, Role } from "@/lib/generated/prisma";
 import { db } from "@/lib/db";
@@ -163,8 +163,7 @@ export async function inviteMembers(_: ActionState, fd: FormData): Promise<Actio
       invitedBy: member.name,
       expiresAt: new Date(Date.now() + 7 * 86_400_000),
     }));
-    const h = await headers();
-    const origin = `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host") ?? "localhost:3000"}`;
+    const origin = await appOrigin();
 
     await db.$transaction([
       db.invite.deleteMany({ where: { workspaceId: workspace.id, email: { in: emails } } }),

@@ -10,7 +10,7 @@ Subscription and usage-billing console built with Next.js 16 (App Router), React
    CREATE DATABASE tiun;
    ```
 
-2. Copy `.env.example` to `.env` and put your PostgreSQL password in `DATABASE_URL`.
+2. Copy `.env.example` to `.env` and put your PostgreSQL password in `DATABASE_URL` and `DIRECT_URL` (locally they are the same).
 
 3. Install, create the tables and load sample data:
 
@@ -68,6 +68,28 @@ Endpoints: `GET/POST /api/v1/customers`, `GET /api/v1/transactions`, `POST /api/
 | API keys, webhooks, sign-in methods | ✓ | ✓ | ✓ | |
 | Customers, refunds, plans, settings, team | ✓ | ✓ | | |
 | Billing and ownership transfer | ✓ | | | |
+
+## Deploying (Vercel + Neon)
+
+1. **Neon:** in your project's dashboard, click **Connect** and copy two connection strings:
+   - the **pooled** one (host contains `-pooler`) → `DATABASE_URL`
+   - the **direct** one (turn off "Connection pooling") → `DIRECT_URL`
+2. **Vercel:** *Add New → Project*, import `jkidune/tiun-dashboard` from GitHub. Leave the framework as Next.js.
+3. Before clicking Deploy, open **Environment Variables** and add:
+
+   | Name | Value |
+   | --- | --- |
+   | `DATABASE_URL` | Neon pooled string |
+   | `DIRECT_URL` | Neon direct string |
+   | `APP_URL` | Your Vercel address, e.g. `https://tiun-dashboard.vercel.app` (you can add it after the first deploy) |
+
+4. Click **Deploy**. The `vercel-build` script creates the tables (`prisma migrate deploy`) and then builds.
+5. Open `/signup` on your live address to create the first workspace.
+6. **Region:** in Vercel → Settings → Functions, pick the region closest to your Neon database (e.g. Frankfurt `fra1` with Neon `aws-eu-central-1`).
+
+Every push to `main` then redeploys, and any new migrations are applied automatically.
+
+**Never run `npm run db:seed` against the live database.** It deletes all data first; the script refuses to run unless the database is on `localhost`.
 
 ## Images
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Check, Plus, Webhook } from "lucide-react";
 import { EmptyRow } from "@/components/ui/empty";
 import { db } from "@/lib/db";
+import { appOrigin } from "@/lib/origin";
 import { can } from "@/lib/auth";
 import { getContext } from "@/lib/context";
 import { relative } from "@/lib/format";
@@ -35,7 +36,7 @@ export default async function IntegrationPage() {
     { title: "Verify a webhook", desc: "Receive events on your server", done: hooks.some((h) => h.status === "ENABLED" && h.lastDeliveryAt), href: "#webhooks" },
   ];
   const doneCount = steps.filter((s) => s.done).length;
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const base = await appOrigin();
 
   return (
     <>

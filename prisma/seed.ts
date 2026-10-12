@@ -61,7 +61,29 @@ async function insertMany<T>(label: string, rows: T[], fn: (chunk: T[]) => Promi
   console.log(`  ${label}: ${rows.length}`);
 }
 
+/** This script deletes every workspace first, so only allow it against a local database. */
+function assertSafeTarget() {
+  let host = "";
+  try {
+    host = new URL(process.env.DATABASE_URL ?? "").hostname;
+  } catch {
+    /* unparsable: treated as remote below */
+  }
+  const local = ["localhost", "127.0.0.1", "::1", "[::1]"].includes(host);
+  if (local && process.env.NODE_ENV !== "production") return;
+  if (process.env.SEED_ALLOW_REMOTE === "yes-delete-everything") {
+    console.warn(`⚠ Seeding remote database ${host}: all existing data will be deleted.`);
+    return;
+  }
+  console.error(
+    `Refusing to seed ${host || "this database"}: the seed deletes ALL workspaces, customers and payments.\n` +
+      `It only runs against localhost. To override for a throwaway database, set SEED_ALLOW_REMOTE=yes-delete-everything.`,
+  );
+  process.exit(1);
+}
+
 async function main() {
+  assertSafeTarget();
   console.log("Clearing existing data…");
   await db.workspace.deleteMany();
 

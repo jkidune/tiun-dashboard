@@ -9,6 +9,7 @@ import { db } from "@/lib/db";
 import { createSession, destroySession, getCurrentMember } from "@/lib/auth";
 import { MODE_COOKIE, MONTH_COOKIE } from "@/lib/context";
 import { formObject, run, type ActionState } from "@/lib/action";
+import { blockedFor, clearFailures, clientIp, recordFailure, tooManyMessage } from "@/lib/rate-limit";
 
 const year = 60 * 60 * 24 * 365;
 const DUMMY_HASH = bcrypt.hashSync("not-a-real-password", 10);
@@ -33,10 +34,18 @@ const loginSchema = z.object({
 export async function login(_: ActionState, fd: FormData): Promise<ActionState> {
   const result = await run(async () => {
     const { email, password } = loginSchema.parse(formObject(fd));
+    const ip = await clientIp();
+    const wait = await blockedFor(email, ip);
+    if (wait) return { error: tooManyMessage(wait) };
+
     const member = await db.teamMember.findUnique({ where: { email } });
     // Compare against a dummy hash when the email is unknown, so timing doesn't reveal accounts.
     const ok = await bcrypt.compare(password, member?.passwordHash ?? DUMMY_HASH);
-    if (!member || !ok) return { error: "That email and password don’t match. Try again." };
+    if (!member || !ok) {
+      await recordFailure(email, ip);
+      return { error: "That email and password don’t match. Try again." };
+    }
+    await clearFailures(email);
     await createSession(member.id);
   });
   if (result?.error) return result;

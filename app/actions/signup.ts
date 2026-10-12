@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { createSession } from "@/lib/auth";
 import { formObject, run, UserError, type ActionState } from "@/lib/action";
+import { blockedFor, clientIp, recordFailure, tooManyMessage } from "@/lib/rate-limit";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Enter your full name."),
@@ -22,6 +23,11 @@ const slugify = (s: string) =>
 export async function signup(_: ActionState, fd: FormData): Promise<ActionState> {
   const result = await run(async () => {
     const input = schema.parse(formObject(fd));
+    // Count every sign-up against the visitor's IP to slow down scripted account creation.
+    const ip = await clientIp();
+    const wait = await blockedFor(null, ip);
+    if (wait) throw new UserError(tooManyMessage(wait));
+    await recordFailure(null, ip);
     if (await db.teamMember.findUnique({ where: { email: input.email } })) {
       throw new UserError("An account with this email already exists. Sign in instead.");
     }
