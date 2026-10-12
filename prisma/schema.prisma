@@ -1,0 +1,269 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  DEVELOPER
+  VIEWER
+}
+
+enum Mode {
+  LIVE
+  TEST
+}
+
+enum CustomerStatus {
+  SUBSCRIBED
+  TRIAL
+  PAUSED
+  CHURNED
+}
+
+enum PricingModel {
+  MONTHLY
+  PER_USE
+}
+
+enum SessionStatus {
+  COMPLETED
+  RUNNING
+  FAILED
+}
+
+enum TxStatus {
+  SUCCEEDED
+  PENDING
+  REFUNDED
+  FAILED
+}
+
+enum WebhookStatus {
+  ENABLED
+  DISABLED
+  FAILING
+}
+
+model Workspace {
+  id                   String   @id @default(cuid())
+  name                 String
+  slug                 String   @unique
+  currency             String   @default("USD")
+  timezone             String   @default("Africa/Dar_es_Salaam")
+  dateFormat           String   @default("DD/MM/YYYY")
+  publishableKey       String   @unique
+  authSettings         Json
+  checkoutSettings     Json
+  notificationSettings Json
+  integrations         Json
+  createdAt            DateTime @default(now())
+
+  members      TeamMember[]
+  invites      Invite[]
+  customers    Customer[]
+  plans        Plan[]
+  sessions     UsageSession[]
+  transactions Transaction[]
+  apiKeys      ApiKey[]
+  apiRequests  ApiRequest[]
+  webhooks     Webhook[]
+  coupons      Coupon[]
+  activity     Activity[]
+}
+
+model TeamMember {
+  id           String    @id @default(cuid())
+  workspaceId  String
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(VIEWER)
+  title        String?
+  phone        String?
+  language     String    @default("English")
+  avatarUrl    String?
+  twoFactor    Boolean   @default(false)
+  lastActiveAt DateTime  @default(now())
+  createdAt    DateTime  @default(now())
+
+  authSessions AuthSession[]
+}
+
+model AuthSession {
+  id         String     @id // SHA-256 of the cookie token
+  memberId   String
+  member     TeamMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  userAgent  String?
+  createdAt  DateTime   @default(now())
+  lastSeenAt DateTime   @default(now())
+  expiresAt  DateTime
+}
+
+model Invite {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  email       String
+  role        Role
+  token       String    @unique
+  invitedBy   String
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+}
+
+model Plan {
+  id          String       @id @default(cuid())
+  workspaceId String
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name        String
+  model       PricingModel
+  priceCents  Int
+  currency    String       @default("USD")
+  trialDays   Int          @default(0)
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+
+  customers Customer[]
+}
+
+model Customer {
+  id           String         @id @default(cuid())
+  workspaceId  String
+  workspace    Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  mode         Mode           @default(LIVE)
+  name         String
+  email        String
+  status       CustomerStatus
+  avatarColor  String
+  planId       String?
+  plan         Plan?          @relation(fields: [planId], references: [id], onDelete: SetNull)
+  createdAt    DateTime       @default(now())
+  churnedAt    DateTime?
+  lastActiveAt DateTime       @default(now())
+
+  sessions     UsageSession[]
+  transactions Transaction[]
+
+  @@index([workspaceId, mode, status])
+  @@index([workspaceId, mode, lastActiveAt])
+}
+
+model UsageSession {
+  id          String        @id @default(cuid())
+  workspaceId String
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  mode        Mode          @default(LIVE)
+  customerId  String
+  customer    Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  feature     String
+  startedAt   DateTime
+  durationMs  Int
+  units       Int
+  costCents   Int
+  status      SessionStatus
+
+  @@index([workspaceId, mode, startedAt])
+  @@index([customerId, startedAt])
+}
+
+model Transaction {
+  id            String      @id @default(cuid())
+  workspaceId   String
+  workspace     Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  mode          Mode        @default(LIVE)
+  customerId    String
+  customer      Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  amountCents   Int
+  refundedCents Int         @default(0)
+  feeCents      Int
+  currency      String      @default("USD")
+  status        TxStatus
+  description   String
+  methodBrand   String
+  methodLast4   String
+  createdAt     DateTime
+
+  @@index([workspaceId, mode, createdAt])
+  @@index([customerId, createdAt])
+}
+
+model ApiKey {
+  id          String       @id @default(cuid())
+  workspaceId String
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  mode        Mode
+  name        String
+  prefix      String // first characters shown in the UI, e.g. sk_live_4f2a
+  keyHash     String       @unique
+  scopes      String[]
+  createdAt   DateTime     @default(now())
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+
+  requests ApiRequest[]
+}
+
+model ApiRequest {
+  id           String    @id @default(cuid())
+  workspaceId  String
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  mode         Mode
+  apiKeyId     String?
+  apiKey       ApiKey?   @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+  method       String
+  path         String
+  statusCode   Int
+  latencyMs    Int
+  requestBody  Json?
+  responseBody Json?
+  createdAt    DateTime  @default(now())
+
+  @@index([workspaceId, mode, createdAt])
+}
+
+model Webhook {
+  id             String        @id @default(cuid())
+  workspaceId    String
+  workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  url            String
+  events         String[]
+  status         WebhookStatus @default(ENABLED)
+  lastDeliveryAt DateTime?
+  createdAt      DateTime      @default(now())
+}
+
+model Coupon {
+  id             String    @id @default(cuid())
+  workspaceId    String
+  workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  code           String
+  percentOff     Int
+  redemptions    Int       @default(0)
+  maxRedemptions Int?
+  expiresAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@unique([workspaceId, code])
+}
+
+model Activity {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  mode        Mode      @default(LIVE)
+  type        String // signup | upgrade | refund | payment_failed | api_key | invite | churn
+  message     String
+  actorName   String
+  createdAt   DateTime  @default(now())
+
+  @@index([workspaceId, mode, createdAt])
+}
