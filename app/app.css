@@ -32,6 +32,10 @@ td.num, th.num { text-align: right; }
 .card-head.pb { padding-bottom: 16px; border-bottom: 1px solid var(--border); }
 .stack { display: flex; flex-direction: column; gap: 16px; }
 .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+/* Table rows also carry the "row" class (for hover/selection); keep them real table rows. */
+tr.row { display: table-row; }
+td code, td .pill, td .tag { white-space: nowrap; }
+td.nowrap { white-space: nowrap; }
 .h-sub { margin: 0 0 10px; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
 .empty-state { padding: 40px 24px; text-align: center; color: var(--muted); }
 
