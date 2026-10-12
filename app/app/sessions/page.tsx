@@ -110,7 +110,7 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
           <LinkTabs
             active={status ? sp.status! : "all"}
             items={[{ key: "all", label: "All", count: all }, ...STATUSES.map((s) => ({ key: s, label: s[0].toUpperCase() + s.slice(1), count: counts.find((c) => c.status === s.toUpperCase())?._count ?? 0 }))]}
-            build={(k) => href("/sessions", current, { status: k === "all" ? null : k, page: null })}
+            build={(k) => href("/app/sessions", current, { status: k === "all" ? null : k, page: null })}
           />
           <div className="table-wrap">
             <table>
@@ -135,17 +135,17 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
                       title="No sessions yet"
                       text="Each time a customer uses your product, your backend records a session with POST /api/v1/sessions. They’ll show up here live."
                     >
-                      <Link className="btn btn-ink" href="/setup/integration#quickstart">See the quickstart</Link>
+                      <Link className="btn btn-ink" href="/app/setup/integration#quickstart">See the quickstart</Link>
                     </EmptyRow>
                   ) : (
                     <EmptyRow colSpan={8} icon={SearchX} title="No sessions match" text="Try a different search or status.">
-                      <Link className="btn" href="/sessions">Clear filters</Link>
+                      <Link className="btn" href="/app/sessions">Clear filters</Link>
                     </EmptyRow>
                   ))}
                 {sessions.map((s) => (
                   <tr key={s.id} className="row">
                     <td style={{ width: "auto", paddingLeft: 24 }}>
-                      <Link className="row-link code" href={href("/sessions", current, { id: s.id })} scroll={false}>ses_{s.id.slice(0, 8)}</Link>
+                      <Link className="row-link code" href={href("/app/sessions", current, { id: s.id })} scroll={false}>ses_{s.id.slice(0, 8)}</Link>
                     </td>
                     <td>
                       <div className="cust">
@@ -164,11 +164,11 @@ export default async function SessionsPage({ searchParams }: { searchParams: Pro
               </tbody>
             </table>
           </div>
-          <Pagination page={page} pageSize={PAGE_SIZE} total={total} build={(p) => href("/sessions", current, { page: p })} />
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} build={(p) => href("/app/sessions", current, { page: p })} />
         </section>
       </div>
 
-      {sp.id && <SessionDrawer id={sp.id} closeHref={href("/sessions", current, { id: null })} />}
+      {sp.id && <SessionDrawer id={sp.id} closeHref={href("/app/sessions", current, { id: null })} />}
     </>
   );
 }
@@ -182,7 +182,7 @@ async function SessionDrawer({ id, closeHref }: { id: string; closeHref: string 
     <Drawer title={<span className="code">ses_{s.id.slice(0, 8)}</span>} closeHref={closeHref} actions={<CopyButton value={s.id} />}>
       <dl className="dl">
         <dt>Status</dt><dd><StatusPill status={s.status} /></dd>
-        <dt>Customer</dt><dd><Link href={`/customers?id=${s.customer.id}`}>{s.customer.name}</Link></dd>
+        <dt>Customer</dt><dd><Link href={`/app/customers?id=${s.customer.id}`}>{s.customer.name}</Link></dd>
         <dt>Feature</dt><dd>{s.feature}</dd>
         <dt>Units</dt><dd>{fmt(s.units)}</dd>
         <dt>Cost</dt><dd>{money(s.costCents, workspace.currency)}</dd>

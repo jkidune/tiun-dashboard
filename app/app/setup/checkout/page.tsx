@@ -72,7 +72,7 @@ export default async function CheckoutPage() {
   return (
     <>
       <PageTopbar title="Checkout" showPeriod={false}>
-        <Link href="/setup/checkout/appearance" className="btn">Appearance</Link>
+        <Link href="/app/setup/checkout/appearance" className="btn">Appearance</Link>
         {edit && plans.length > 0 && <CreatePlanModal currency={workspace.currency} />}
       </PageTopbar>
       <div className="content">

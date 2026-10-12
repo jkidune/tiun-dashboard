@@ -40,7 +40,7 @@ export async function createCustomer(_: ActionState, fd: FormData): Promise<Acti
         data: { workspaceId: workspace.id, mode, type: "signup", actorName: member.name, message: `${member.name} added ${input.name}${plan ? ` on ${plan.name}` : ""}` },
       }),
     ]);
-    revalidatePath("/customers");
+    revalidatePath("/app/customers");
     return { ok: true, message: `${input.name} added.` };
   });
 }
@@ -60,7 +60,7 @@ export async function setCustomerStatus(_: ActionState, fd: FormData): Promise<A
         data: { workspaceId: workspace.id, mode: c.mode, type: status === "CHURNED" ? "churn" : "upgrade", actorName: member.name, message: `${member.name} ${STATUS_VERB[status]} ${c.name}` },
       }),
     ]);
-    revalidatePath("/customers");
+    revalidatePath("/app/customers");
     return { ok: true, message: `${c.name} ${STATUS_VERB[status]}.` };
   });
 }
@@ -71,7 +71,7 @@ export async function bulkCustomers(ids: string[], op: "pause" | "resume" | "del
     const where = { id: { in: ids.slice(0, 500) }, workspaceId: workspace.id };
     if (op === "delete") await db.customer.deleteMany({ where });
     else await db.customer.updateMany({ where: { ...where, status: { not: "CHURNED" } }, data: { status: op === "pause" ? "PAUSED" : "SUBSCRIBED" } });
-    revalidatePath("/customers");
+    revalidatePath("/app/customers");
     return { ok: true, message: `${ids.length} customer${ids.length === 1 ? "" : "s"} updated.` };
   });
 }

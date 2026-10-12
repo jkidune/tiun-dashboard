@@ -8,7 +8,7 @@ import { ActionForm, SubmitButton } from "@/components/ui/client";
 export const metadata = { title: "Sign in" };
 
 export default async function LoginPage() {
-  if (await getCurrentMember()) redirect("/");
+  if (await getCurrentMember()) redirect("/app");
   return (
     <div className="auth-page">
       <div className="auth-card">

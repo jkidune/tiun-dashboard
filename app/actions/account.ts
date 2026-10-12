@@ -41,7 +41,7 @@ export async function saveNotifications(_: ActionState, fd: FormData): Promise<A
       NOTIFICATION_EVENTS.map((e) => [e.key, { email: checked(fd, `${e.key}_email`), slack: checked(fd, `${e.key}_slack`) }]),
     );
     await db.workspace.update({ where: { id: workspace.id }, data: { notificationSettings: settings as Prisma.InputJsonObject } });
-    revalidatePath("/settings");
+    revalidatePath("/app/settings");
     return { ok: true, message: "Notification preferences saved." };
   });
 }
@@ -121,7 +121,7 @@ export async function changePassword(_: ActionState, fd: FormData): Promise<Acti
       // Sign out every other device after a password change.
       db.authSession.deleteMany({ where: { memberId: member.id, NOT: { id: sessionId } } }),
     ]);
-    revalidatePath("/profile");
+    revalidatePath("/app/profile");
     return { ok: true, message: "Password changed. Other devices were signed out." };
   });
 }
@@ -132,7 +132,7 @@ export async function signOutSession(_: ActionState, fd: FormData): Promise<Acti
     const id = String(fd.get("id"));
     if (id === sessionId) throw new UserError("Use Sign out in the account menu to end this session.");
     await db.authSession.deleteMany({ where: { id, memberId: member.id } });
-    revalidatePath("/profile");
+    revalidatePath("/app/profile");
     return { ok: true };
   });
 }
@@ -172,7 +172,7 @@ export async function inviteMembers(_: ActionState, fd: FormData): Promise<Actio
         data: { workspaceId: workspace.id, type: "invite", actorName: member.name, message: `${member.name} invited ${emails.join(", ")} as ${role[0] + role.slice(1).toLowerCase()}` },
       }),
     ]);
-    revalidatePath("/settings/users");
+    revalidatePath("/app/settings/users");
     return {
       ok: true,
       message: `Invite${emails.length > 1 ? "s" : ""} created. Send each person their link; it works for 7 days.`,
@@ -188,7 +188,7 @@ export async function resendInvite(_: ActionState, fd: FormData): Promise<Action
       where: { id: String(fd.get("id")), workspaceId: workspace.id },
       data: { expiresAt: new Date(Date.now() + 7 * 86_400_000), token: randomBytes(18).toString("base64url") },
     });
-    revalidatePath("/settings/users");
+    revalidatePath("/app/settings/users");
     return { ok: true };
   });
 }
@@ -197,7 +197,7 @@ export async function revokeInvite(_: ActionState, fd: FormData): Promise<Action
   return run(async () => {
     const { workspace } = await authorize("team");
     await db.invite.deleteMany({ where: { id: String(fd.get("id")), workspaceId: workspace.id } });
-    revalidatePath("/settings/users");
+    revalidatePath("/app/settings/users");
     return { ok: true };
   });
 }
@@ -216,7 +216,7 @@ export async function changeRole(_: ActionState, fd: FormData): Promise<ActionSt
     const target = await editableTarget(String(fd.get("id")));
     const role = z.enum(ASSIGNABLE as [Role, ...Role[]]).parse(fd.get("role"));
     await db.teamMember.update({ where: { id: target.id }, data: { role } });
-    revalidatePath("/settings/users");
+    revalidatePath("/app/settings/users");
     return { ok: true, message: `${target.name} is now ${role[0] + role.slice(1).toLowerCase()}.` };
   });
 }
@@ -225,7 +225,7 @@ export async function removeMember(_: ActionState, fd: FormData): Promise<Action
   return run(async () => {
     const target = await editableTarget(String(fd.get("id")));
     await db.teamMember.delete({ where: { id: target.id } });
-    revalidatePath("/settings/users");
+    revalidatePath("/app/settings/users");
     return { ok: true, message: `${target.name} was removed.` };
   });
 }
@@ -254,5 +254,5 @@ export async function acceptInvite(_: ActionState, fd: FormData): Promise<Action
     await createSession(member.id);
   });
   if (result?.error) return result;
-  redirect("/");
+  redirect("/app");
 }

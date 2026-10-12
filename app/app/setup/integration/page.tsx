@@ -30,7 +30,7 @@ export default async function IntegrationPage() {
   const pk = mode === "LIVE" ? workspace.publishableKey : workspace.publishableKey.replace("pk_live_", "pk_test_");
 
   const steps = [
-    { title: "Create a secret key", desc: "Server-side key for the API", done: activeKeys > 0, href: "/apis" },
+    { title: "Create a secret key", desc: "Server-side key for the API", done: activeKeys > 0, href: "/app/apis" },
     { title: "Install the SDK", desc: "Your first authenticated request", done: !!anyRequest, href: "#quickstart" },
     { title: "Send a usage event", desc: "Record a customer session", done: !!anySession, href: "#quickstart" },
     { title: "Verify a webhook", desc: "Receive events on your server", done: hooks.some((h) => h.status === "ENABLED" && h.lastDeliveryAt), href: "#webhooks" },
@@ -77,7 +77,7 @@ export default async function IntegrationPage() {
                 ]}
               />
               <p className="hint" style={{ margin: 0 }}>
-                Endpoints: <code>GET/POST /api/v1/customers</code>, <code>GET /api/v1/transactions</code>, <code>POST /api/v1/sessions</code>. Every call is logged on the <Link href="/apis">APIs</Link> page.
+                Endpoints: <code>GET/POST /api/v1/customers</code>, <code>GET /api/v1/transactions</code>, <code>POST /api/v1/sessions</code>. Every call is logged on the <Link href="/app/apis">APIs</Link> page.
               </p>
             </div>
           </section>
@@ -93,7 +93,7 @@ export default async function IntegrationPage() {
               <div className="field">
                 <span className="label">Secret keys</span>
                 <p style={{ margin: 0 }}>{activeKeys} active. Secrets are shown once when created.</p>
-                <Link href="/apis" className="btn" style={{ width: "fit-content" }}>Manage secret keys</Link>
+                <Link href="/app/apis" className="btn" style={{ width: "fit-content" }}>Manage secret keys</Link>
               </div>
             </div>
           </section>

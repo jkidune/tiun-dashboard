@@ -53,5 +53,5 @@ export async function signup(_: ActionState, fd: FormData): Promise<ActionState>
     await createSession(member.id);
   });
   if (result?.error) return result;
-  redirect("/");
+  redirect("/app");
 }

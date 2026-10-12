@@ -37,59 +37,59 @@ type NavLeaf = { label: string; href: string; icon: LucideIcon; count?: keyof Co
 type NavParent = { label: string; icon: LucideIcon; base: string; children: { label: string; href: string }[] };
 
 const PLATFORM: NavLeaf[] = [
-  { label: "Home", href: "/", icon: House },
-  { label: "Analytics", href: "/analytics", icon: Sparkles },
-  { label: "Sessions", href: "/sessions", icon: Server },
-  { label: "User Management", href: "/customers", icon: Users },
-  { label: "Transactions", href: "/transactions", icon: ArrowLeftRight, count: "transactions", alert: true },
-  { label: "APIs", href: "/apis", icon: Code },
+  { label: "Home", href: "/app", icon: House },
+  { label: "Analytics", href: "/app/analytics", icon: Sparkles },
+  { label: "Sessions", href: "/app/sessions", icon: Server },
+  { label: "User Management", href: "/app/customers", icon: Users },
+  { label: "Transactions", href: "/app/transactions", icon: ArrowLeftRight, count: "transactions", alert: true },
+  { label: "APIs", href: "/app/apis", icon: Code },
 ];
 
 const SETUP: (NavLeaf | NavParent)[] = [
-  { label: "Integration", href: "/setup/integration", icon: Plug, count: "integration", alert: true },
+  { label: "Integration", href: "/app/setup/integration", icon: Plug, count: "integration", alert: true },
   {
     label: "Authentication",
     icon: Shield,
-    base: "/setup/authentication",
+    base: "/app/setup/authentication",
     children: [
-      { label: "Providers", href: "/setup/authentication" },
-      { label: "Policies", href: "/setup/authentication/policies" },
+      { label: "Providers", href: "/app/setup/authentication" },
+      { label: "Policies", href: "/app/setup/authentication/policies" },
     ],
   },
   {
     label: "Checkout",
     icon: CreditCard,
-    base: "/setup/checkout",
+    base: "/app/setup/checkout",
     children: [
-      { label: "Plans & coupons", href: "/setup/checkout" },
-      { label: "Appearance", href: "/setup/checkout/appearance" },
+      { label: "Plans & coupons", href: "/app/setup/checkout" },
+      { label: "Appearance", href: "/app/setup/checkout/appearance" },
     ],
   },
 ];
 
 const ACCOUNT: NavLeaf[] = [
-  { label: "Documentation", href: "/setup/integration#quickstart", icon: Book },
-  { label: "Settings", href: "/settings", icon: SlidersVertical },
-  { label: "Team", href: "/settings/users", icon: UsersRound, count: "team" },
+  { label: "Documentation", href: "/app/setup/integration#quickstart", icon: Book },
+  { label: "Settings", href: "/app/settings", icon: SlidersVertical },
+  { label: "Team", href: "/app/settings/users", icon: UsersRound, count: "team" },
 ];
 
 /** Every destination, for the command palette. */
 const DESTINATIONS = [
   ...PLATFORM.map((p) => ({ label: p.label, href: p.href, icon: p.icon })),
-  { label: "Integration", href: "/setup/integration", icon: Plug },
-  { label: "Authentication providers", href: "/setup/authentication", icon: Shield },
-  { label: "Authentication policies", href: "/setup/authentication/policies", icon: Shield },
-  { label: "Plans & coupons", href: "/setup/checkout", icon: CreditCard },
-  { label: "Checkout appearance", href: "/setup/checkout/appearance", icon: CreditCard },
-  { label: "Settings", href: "/settings", icon: SlidersVertical },
-  { label: "Billing", href: "/settings?tab=billing", icon: SlidersVertical },
-  { label: "Team members", href: "/settings/users", icon: UsersRound },
-  { label: "Profile", href: "/profile", icon: UserRound },
+  { label: "Integration", href: "/app/setup/integration", icon: Plug },
+  { label: "Authentication providers", href: "/app/setup/authentication", icon: Shield },
+  { label: "Authentication policies", href: "/app/setup/authentication/policies", icon: Shield },
+  { label: "Plans & coupons", href: "/app/setup/checkout", icon: CreditCard },
+  { label: "Checkout appearance", href: "/app/setup/checkout/appearance", icon: CreditCard },
+  { label: "Settings", href: "/app/settings", icon: SlidersVertical },
+  { label: "Billing", href: "/app/settings?tab=billing", icon: SlidersVertical },
+  { label: "Team members", href: "/app/settings/users", icon: UsersRound },
+  { label: "Profile", href: "/app/profile", icon: UserRound },
 ];
 
 function isActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  if (href === "/settings") return pathname === "/settings";
+  if (href === "/app") return pathname === "/app";
+  if (href === "/app/settings") return pathname === "/app/settings";
   return pathname === href || pathname.startsWith(href + "/");
 }
 
@@ -156,8 +156,8 @@ function MeCard({ me, logout }: { me: Me; logout: () => Promise<void> }) {
       {open && (
         <div className="menu" role="menu">
           <div className="hint" style={{ padding: "6px 10px" }}>{me.email}</div>
-          <Link href="/profile" role="menuitem" onClick={() => setOpen(false)}><UserRound size={16} /> Profile</Link>
-          <Link href="/settings/users" role="menuitem" onClick={() => setOpen(false)}><UsersRound size={16} /> Team members</Link>
+          <Link href="/app/profile" role="menuitem" onClick={() => setOpen(false)}><UserRound size={16} /> Profile</Link>
+          <Link href="/app/settings/users" role="menuitem" onClick={() => setOpen(false)}><UsersRound size={16} /> Team members</Link>
           <hr />
           <form action={logout}>
             <button type="submit" role="menuitem"><LogOut size={16} /> Sign out</button>
@@ -200,7 +200,7 @@ function Palette({ onClose }: { onClose: () => void }) {
   const pages = DESTINATIONS.filter((d) => !query || d.label.toLowerCase().includes(query));
   const items = [
     ...pages.map((p) => ({ ...p, hint: "Go to" })),
-    ...(query ? [{ label: `Search customers for “${q.trim()}”`, href: `/customers?q=${encodeURIComponent(q.trim())}`, icon: Search, hint: "Customers" }] : []),
+    ...(query ? [{ label: `Search customers for “${q.trim()}”`, href: `/app/customers?q=${encodeURIComponent(q.trim())}`, icon: Search, hint: "Customers" }] : []),
   ];
   useEffect(() => setSel(0), [q]);
   const go = (href: string) => {
@@ -307,7 +307,7 @@ export function Shell({
             </button>
           </div>
 
-          <Link href="/settings" className="workspace" title={`${workspace} · Workspace settings`} style={{ color: "inherit", textDecoration: "none" }}>
+          <Link href="/app/settings" className="workspace" title={`${workspace} · Workspace settings`} style={{ color: "inherit", textDecoration: "none" }}>
             <span className="ws-avatar">{initials(workspace)}</span>
             <span className="ws-text rail-hide">
               <span className="ws-name">{workspace}</span>

@@ -68,7 +68,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
           <LinkTabs
             active={tab}
             items={[{ key: "members", label: "Members", count: members.length }, { key: "pending", label: "Pending invites", count: invites.length }]}
-            build={(k) => href("/settings/users", {}, { tab: k === "members" ? null : k })}
+            build={(k) => href("/app/settings/users", {}, { tab: k === "members" ? null : k })}
           />
           <div className="table-wrap">
             {tab === "members" ? (

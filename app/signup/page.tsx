@@ -8,7 +8,7 @@ import { ActionForm, SubmitButton } from "@/components/ui/client";
 export const metadata = { title: "Create your workspace" };
 
 export default async function SignupPage() {
-  if (await getCurrentMember()) redirect("/");
+  if (await getCurrentMember()) redirect("/app");
   return (
     <div className="auth-page">
       <div className="auth-card">

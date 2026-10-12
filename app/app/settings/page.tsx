@@ -27,7 +27,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <PageTopbar title="Settings" showPeriod={false} />
       <div className="content">
         <section className="card">
-          <LinkTabs active={tab} items={TABS} build={(k) => href("/settings", {}, { tab: k === "general" ? null : k })} />
+          <LinkTabs active={tab} items={TABS} build={(k) => href("/app/settings", {}, { tab: k === "general" ? null : k })} />
         </section>
         {tab === "general" && <General ctx={ctx} />}
         {tab === "billing" && <Billing ctx={ctx} />}

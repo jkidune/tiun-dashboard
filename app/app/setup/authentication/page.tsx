@@ -12,7 +12,7 @@ export default async function AuthenticationPage() {
   return (
     <>
       <PageTopbar title="Authentication" showPeriod={false}>
-        <Link href="/setup/authentication/policies" className="btn">Policies</Link>
+        <Link href="/app/setup/authentication/policies" className="btn">Policies</Link>
       </PageTopbar>
       <div className="content">
         <ProvidersForm initial={readAuth(workspace.authSettings)} workspace={workspace.name} canEdit={can(member.role, "developer")} />

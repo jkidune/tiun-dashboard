@@ -12,7 +12,7 @@ export default async function CheckoutAppearancePage() {
   return (
     <>
       <PageTopbar title="Checkout" showPeriod={false}>
-        <Link href="/setup/checkout" className="btn">Plans & coupons</Link>
+        <Link href="/app/setup/checkout" className="btn">Plans & coupons</Link>
       </PageTopbar>
       <div className="content">
         <AppearanceForm initial={readCheckout(workspace.checkoutSettings)} workspace={workspace.name} canEdit={can(member.role, "checkout")} />
